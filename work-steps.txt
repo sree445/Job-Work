@@ -1,0 +1,35 @@
+hive_db=gcp_dummy
+hdfs_path=hdfs://cluster-dataproc1-m/data/
+query=select * from gcp_dummy.test where id>2
+
+create database gcp_dummy;
+create table test (id int,name String,age int,salary int);
+insert into table test values (1,"sreekanth",35,4500);
+insert into table test values (2,"vasu",28,2500);
+insert into table test values (3,"spandana",30,3500);
+
+spark submit command
+
+spark-submit  \
+  --class org.example.code.sparkReader \
+  --master yarn \
+  --deploy-mode client \
+  --driver-memory 4g \
+  --executor-memory 4g \
+  --executor-cores 2 \
+   my-project-name.jar conf.properties 
+
+
+hdfs dfs -ls hdfs://cluster-dataproc1-m/data/output
+
+Found 3 items
+-rw-r--r--   1 sravani_gubbala12 hadoop          0 2023-06-13 13:41 hdfs://cluster-dataproc1-m/data/output/_SUCCESS
+-rw-r--r--   1 sravani_gubbala12 hadoop         19 2023-06-13 13:41 hdfs://cluster-dataproc1-m/data/output/part-00000-32579db6-1d69-4b58-900d-5e56033e157d-c000.csv
+-rw-r--r--   1 sravani_gubbala12 hadoop         38 2023-06-13 13:41 hdfs://cluster-dataproc1-m/data/output/part-00002-32579db6-1d69-4b58-900d-5e56033e157d-c000.csv
+
+hdfs dfs -getmerge hdfs://cluster-dataproc1-m/data/output/*.csv data.csv
+
+#how-to-remove-duplicate-headers-from-a-file-except-first-occurrence-in-linux
+key="id,name,age,salary"
+awk '{key=""; for(i=1;i<=NF;i++) key=key$i;}!unique[key]++' data.csv > final.csv
+
